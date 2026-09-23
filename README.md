@@ -62,6 +62,18 @@ Distribuição da base de clientes por quartis analíticos com pontuação de 1 
 
 ## 🚀 Como Reproduzir Localmente
 
-1. Crie a base de dados no PostgreSQL:
+1. Clone o repositório em sua máquina:
+   ```bash
+   git clone [https://github.com/dansanfer/customer-analytics-sql.git](https://github.com/dansanfer/customer-analytics-sql.git)
+   ```
+
+2. Conecte ao seu servidor PostgreSQL e crie a base de dados:
    ```sql
    CREATE DATABASE customer_analytics;
+   ```
+
+3. Abra o seu cliente de banco de dados (DBeaver, pgAdmin ou terminal `psql`), selecione a base `customer_analytics` e execute os scripts da pasta `/sql` na seguinte ordem:
+   - **`01_schema.sql`**: Criação da estrutura de tabelas e índices.
+   - **`02_seed.sql`**: Inserção dos dados sintéticos para simulação.
+   - **`03_cohort_analysis.sql`**: Execução e cálculo da retenção por coorte.
+   - **`04_rfm_segmentation.sql`**: Execução da classificação de clientes por RFM.
