@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: customer_analytics_db
+    restart: always
+    environment:
+      POSTGRES_DB: customer_analytics
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./sql:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d customer_analytics"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  dashboard:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    container_name: customer_analytics_dashboard
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DB_USER=postgres
+      - DB_PASS=postgrespassword
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=customer_analytics
+    ports:
+      - "8501:8501"
+
+volumes:
+  postgres_data:
