@@ -1,9 +1,3 @@
--- sql/05_materialized_views.sql
--- Camada Analítica: Views Materializadas para Consumo Otimizado (BI / Streamlit)
-
--- ========================================================
--- 1. VIEW MATERIALIZADA: Matriz de Retenção de Coorte
--- ========================================================
 DROP MATERIALIZED VIEW IF EXISTS mv_cohort_retention;
 
 CREATE MATERIALIZED VIEW mv_cohort_retention AS
@@ -57,13 +51,8 @@ FROM retention_aggregation r
 JOIN cohort_sizes s ON r.cohort_month = s.cohort_month
 ORDER BY r.cohort_month, r.month_number;
 
--- Índice único para habilitar atualizações concorrentes sem travar leituras
 CREATE UNIQUE INDEX idx_mv_cohort_unique ON mv_cohort_retention (cohort_month, month_number);
 
-
--- ========================================================
--- 2. VIEW MATERIALIZADA: Segmentação RFM de Clientes
--- ========================================================
 DROP MATERIALIZED VIEW IF EXISTS mv_rfm_segmentation;
 
 CREATE MATERIALIZED VIEW mv_rfm_segmentation AS
@@ -119,19 +108,14 @@ SELECT
 FROM rfm_segmented
 ORDER BY total_score DESC, monetary_total DESC;
 
--- Índice para acelerar consultas diretas por cliente e por segmento
 CREATE UNIQUE INDEX idx_mv_rfm_customer ON mv_rfm_segmentation (customer_id);
 CREATE INDEX idx_mv_rfm_segment ON mv_rfm_segmentation (customer_segment);
 
-
--- ========================================================
--- 3. PROCEDURE: Rotina de Atualização Periódica
--- ========================================================
 CREATE OR REPLACE PROCEDURE sp_refresh_analytics_views()
 LANGUAGE plpgsql
 AS $$
 BEGIN
-    -- Atualiza as views de forma concorrente sem bloquear consultas ativas
+   
     REFRESH MATERIALIZED VIEW CONCURRENTLY mv_cohort_retention;
     REFRESH MATERIALIZED VIEW CONCURRENTLY mv_rfm_segmentation;
     RAISE NOTICE 'Views analíticas atualizadas com sucesso em %', clock_timestamp();

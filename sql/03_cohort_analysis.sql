@@ -1,6 +1,3 @@
--- sql/03_cohort_analysis.sql
--- Análise de Retenção de Clientes por Mês de Aquisição (Coorte)
-
 WITH customer_first_purchase AS (
     SELECT 
         customer_id,

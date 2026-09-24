@@ -1,6 +1,3 @@
--- sql/01_schema.sql
--- Modelagem para análise de transações e comportamento de clientes
-
 DROP TABLE IF EXISTS transactions;
 DROP TABLE IF EXISTS customers;
 

@@ -1,6 +1,3 @@
--- sql/04_rfm_segmentation.sql
--- Segmentação de Clientes por Recência, Frequência e Valor Monetário (RFM)
-
 WITH customer_aggregates AS (
     SELECT 
         customer_id,

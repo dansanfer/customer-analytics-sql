@@ -4,16 +4,12 @@ import pandas as pd
 import plotly.express as px
 from sqlalchemy import create_engine
 
-# ========================================================
-# Configuração da Página
-# ========================================================
 st.set_page_config(
     page_title="Customer Analytics & Retention Dashboard",
     page_icon="📊",
     layout="wide"
 )
 
-# String de conexão local (ajuste a password se necessário)
 DB_USER = os.getenv("DB_USER", "postgres")
 DB_PASS = os.getenv("DB_PASS", "postgres")
 DB_HOST = os.getenv("DB_HOST", "localhost")
@@ -29,7 +25,6 @@ def get_database_connection():
 @st.cache_data(ttl=600)
 def load_data():
     engine = get_database_connection()
-    # Consome diretamente as Materialized Views otimizadas
     cohort_df = pd.read_sql("SELECT * FROM mv_cohort_retention ORDER BY cohort_month, month_number;", engine)
     rfm_df = pd.read_sql("SELECT * FROM mv_rfm_segmentation ORDER BY total_score DESC;", engine)
     return cohort_df, rfm_df
@@ -41,9 +36,7 @@ except Exception as e:
     st.info("Certifique-se de que o serviço do PostgreSQL está ativo e as Materialized Views foram criadas.")
     st.stop()
 
-# ========================================================
-# Cabeçalho e Métricas Principais
-# ========================================================
+
 st.title("📊 Customer Analytics & Retention Dashboard")
 st.markdown("Monitorização de retenção por coorte e segmentação comportamental RFM sobre dados transacionais.")
 
@@ -60,13 +53,10 @@ col4.metric("Clientes VIP", f"{vip_customers} ({vip_customers/total_customers*10
 
 st.divider()
 
-# ========================================================
-# Secção 1: Matriz de Retenção de Coorte (Heatmap)
-# ========================================================
+
 st.subheader("1. Análise de Retenção de Coorte (Mês a Mês)")
 st.caption("Percentagem de utilizadores ativos nos meses subsequentes à primeira transação.")
 
-# Monta tabela pivot para o Heatmap (Linhas = Cohort, Colunas = Mês Relativo)
 cohort_pivot = cohort_df.pivot(
     index='cohort_month', 
     columns='month_number', 
@@ -85,9 +75,6 @@ st.plotly_chart(fig_cohort, use_container_width=True)
 
 st.divider()
 
-# ========================================================
-# Secção 2: Segmentação RFM
-# ========================================================
 st.subheader("2. Segmentação Comportamental RFM")
 
 col_left, col_right = st.columns([1, 1])
@@ -124,7 +111,6 @@ with col_right:
     )
     st.plotly_chart(fig_scatter, use_container_width=True)
 
-# Tabela Detalhada com Filtro Interativo
 st.markdown("### Consulta Detalhada de Clientes")
 selected_segment = st.selectbox("Filtrar por Segmento:", ["Todos"] + list(rfm_df['customer_segment'].unique()))
 

@@ -1,6 +1,3 @@
--- sql/02_seed.sql
--- Povoamento de dados sintéticos para teste analítico
-
 INSERT INTO customers (customer_name, signup_date)
 SELECT 
     'Cliente ' || i,
